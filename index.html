@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -562,7 +563,8 @@
         }
 
         // ====================================
-        // NOUVEAU: GESTION DU MEILLEUR SCORE LOCAL
+        // GESTION DU MEILLEUR SCORE LOCAL
+        // (Inchangé)
         // ====================================
 
         function sauvegarderMeilleurScore() {
@@ -651,10 +653,12 @@
 
             motSecret = SEQUENCE_MOTS_SECRETS[currentLevel];
             
-            document.getElementById('levelTitle').textContent = `Mot Secret du Jour N°${currentLevel + 1} (${motSecret.toUpperCase()})`; // Affiche le mot secret pour la démo
+            // CORRECTION CRUCIALE ICI : N'affiche PAS le mot secret
+            document.getElementById('levelTitle').textContent = `Mot Secret du Jour N°${currentLevel + 1}`; 
+            
             mettreAJourUIJeu(partieTerminee);
             afficherResultats();
-            afficherMeilleurScore(); // Afficher le meilleur score pour ce niveau
+            afficherMeilleurScore(); 
             document.getElementById('wordInput').focus();
         }
 
@@ -694,12 +698,19 @@
             }
 
             if (trouve) {
-                sauvegarderMeilleurScore(); // Sauvegarde le meilleur score
+                // Révélation du mot secret UNIQUEMENT si trouvé
+                document.getElementById('levelTitle').textContent = `Mot Secret du Jour N°${currentLevel + 1} : ${motSecret.toUpperCase()} 🎉`;
+
+                sauvegarderMeilleurScore(); 
                 nextButton.textContent = (currentLevel + 1 < SEQUENCE_MOTS_SECRETS.length) ? "Passer au Mot Suivant" : "Recommencer la Série";
                 nextButton.classList.remove('disabled-button');
                 nextButton.onclick = passerAuMotSuivant; 
                 nextButton.disabled = false;
             } else {
+                 // Assure que le titre reste simple si on revient ou si la partie n'est pas finie
+                 if (!isChallengeMode) {
+                     document.getElementById('levelTitle').textContent = `Mot Secret du Jour N°${currentLevel + 1}`;
+                 }
                 nextButton.textContent = "Passer au Mot Suivant";
                 nextButton.classList.add('disabled-button');
                 nextButton.onclick = passerAuMotSuivant;
