@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sémantique Infini (Thème Nuit & Social)</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=all" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    
+    <style>
+        /* ==================================== */
+        /* 1. STYLES DE BASE (DARK MODE) */
+        /* ==================================== */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #121212; 
+            color: #f0f0f0; 
+            margin: 0;
+            padding: 40px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: #1e1e1e; 
+            padding: 30px;
+            border-radius: 16px; 
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6); 
+            border: 1px solid #333333; 
+            margin-bottom: 30px;
+            transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
+        }
+        .hidden { display: none !important; }
+
+        /* ==================================== */
+        /* 2. EN-TÊTE & PROFIL */
+        /* ==================================== */
+        #profileArea {
+            width: 100%;
+            max-width: 650px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 25px;
+            background-color: #2a2a2a;
+            border-radius: 16px;
+            border: 1px solid #3a3a3a;
+            animation: slideIn 0.8s ease-out;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        #profileName {
+            font-size: 22px;
+            font-weight: 800;
+            color: #00bcd4;
+            text-shadow: 0 0 5px rgba(0, 188, 212, 0.3);
+        }
+        .change-profile-btn {
+            background-color: #444;
+            color: #ccc;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .change-profile-btn:hover {
+            background-color: #555;
+            color: #fff;
+        }
+
+        h1 { font-size: 38px; font-weight: 900; color: #ffffff; margin-bottom: 5px; }
+        .level-title { 
+            font-size: 26px; 
+            font-weight: 700; 
+            color: #aaaaaa; 
+            margin-bottom: 20px; 
+        }
+        .subtitle { color: #888888; }
+        .attempt-counter { font-size: 18px; font-weight: 600; margin-bottom: 15px; color: #f0f0f0; }
+
+        /* ==================================== */
+        /* NOUVEAU: CLASSEMENT LOCAL */
+        /* ==================================== */
+        #bestScoreDisplay {
+            margin-bottom: 15px;
+            padding: 8px 15px;
+            border-radius: 8px;
+            background-color: #333333;
+            color: #ffeb3b; 
+            font-weight: 600;
+            border: 1px solid #ffeb3b;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            animation: pulse 1.5s infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { box-shadow: 0 0 0px rgba(255, 235, 59, 0.5); }
+            to { box-shadow: 0 0 10px rgba(255, 235, 59, 0.8); }
+        }
+
+        /* ==================================== */
+        /* 3. INPUTS ET BOUTONS */
+        /* ==================================== */
+        .input-area { display: flex; gap: 12px; margin-bottom: 35px; }
+        .input-area input { 
+            flex-grow: 1; padding: 18px 20px; border: 1px solid #444; 
+            border-radius: 10px; font-size: 18px; color: #f0f0f0;
+            background-color: #333333; transition: border-color 0.3s, box-shadow 0.3s; 
+        }
+        .input-area button { 
+            background-color: #00bcd4; color: #1a1a1a; padding: 15px 25px; 
+            border: none; border-radius: 10px; font-size: 18px; font-weight: 700; 
+            cursor: pointer; transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s; 
+        }
+        .action-buttons { 
+            display: flex; 
+            justify-content: center; 
+            gap: 15px; 
+            margin-top: 30px; 
+            flex-wrap: wrap; 
+        }
+        .new-game-button {
+            background-color: #4caf50; color: #1a1a1a; border-radius: 10px;
+            padding: 12px 25px; border: none; font-weight: 700;
+            cursor: pointer; transition: background-color 0.2s, transform 0.1s;
+        }
+        .reset-button { background-color: #f44336 !important; color: white !important; }
+        .challenge-exit-button { 
+            background-color: #00bcd4; 
+            color: #1a1a1a;
+        }
+
+        /* ==================================== */
+        /* 4. TABLEAU */
+        /* ==================================== */
+        .results table { 
+            width: 100%; 
+            border-collapse: separate; 
+            border-spacing: 0 5px; 
+            text-align: left; 
+        }
+        .results th { 
+            padding: 10px 0; 
+            font-weight: 500; 
+            color: #888888; 
+            text-transform: uppercase; 
+            font-size: 13px; 
+        }
+        .results td { 
+            padding: 12px 10px; 
+            font-weight: 500; 
+            font-size: 16px;
+            background-color: #333333; 
+            color: #f0f0f0; 
+            border: none; 
+            border-radius: 4px; 
+            position: relative; 
+            z-index: 1; 
+        }
+        .score-900 { color: #ffeb3b; } 
+        .score-700 { color: #ff9800; } 
+        .temp-win { 
+            color: #4caf50; font-weight: 700; letter-spacing: 1px;
+            text-shadow: 0 0 5px rgba(76, 175, 80, 0.7); animation: flashSuccess 1.5s infinite alternate;
+        } 
+        .results tbody tr {
+             transition: background-color 0.2s; 
+             opacity: 0;
+             animation: fadeIn 0.5s forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* ==================================== */
+        /* 5. PANNEAUX SOCIAUX & DÉFI */
+        /* ==================================== */
+        .social-panel {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            margin-top: 20px;
+            width: 100%;
+            max-width: 650px;
+            border: 1px solid #333;
+        }
+        .search-input-area {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .search-input-area input {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid #444;
+            background-color: #333;
+            color: #f0f0f0;
+        }
+        .search-input-area button {
+            background-color: #ff9800;
+            color: #1a1a1a;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: background-color 0.2s;
+        }
+        .friend-result {
+            background-color: #333;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            border-left: 5px solid #ff9800;
+            animation: popIn 0.3s forwards;
+            animation-delay: 0.1s;
+        }
+        .friend-result button {
+             background-color: #4caf50;
+             color: white;
+             border: none;
+             padding: 8px 15px;
+             border-radius: 8px;
+             cursor: pointer;
+             font-weight: 600;
+             transition: background-color 0.2s;
+        }
+        .challenge-message {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #1a1a1a;
+            border: 1px dashed #4caf50;
+            border-radius: 8px;
+            color: #4caf50;
+            font-weight: 600;
+        }
+        .challenge-message button {
+            background-color: #00bcd4;
+            color: #1a1a1a;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            margin-left: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: background-color 0.2s;
+        }
+
+    </style>
+</head>
+<body>
+    
+    <div class="container hidden" id="loginScreen">
+        <h2>Bienvenue dans Sémantique Infini</h2>
+        <p class="subtitle" style="margin-bottom: 30px;">Veuillez entrer votre pseudo pour commencer à jouer.</p>
+        <input type="text" id="usernameInput" placeholder="Votre Pseudo (max 12 caractères)" maxlength="12" onkeydown="if(event.key === 'Enter') saveProfile()">
+        <button onclick="saveProfile()">Commencer la Partie</button>
+    </div>
+
+    <div id="profileArea" class="hidden">
+        <div>
+            <i class="fa-solid fa-user-astronaut" style="color:#00bcd4; margin-right: 10px;"></i> Joueur : <span id="profileName"></span>
+        </div>
+        <button class="change-profile-btn" onclick="resetProfile()">Changer de Pseudo</button>
+    </div>
+
+    <div class="main-game-area hidden" id="mainGameArea">
+        <div class="container" id="gameContainer">
+            <h1>Sémantique Infini</h1>
+            <div class="level-title" id="levelTitle">Mot Secret du Jour N°1</div>
+            <p class="subtitle">Trouvez le mot secret en vous basant sur la proximité sémantique.</p>
+            
+            <div id="bestScoreDisplay">
+                 <i class="fa-solid fa-trophy" style="color:#ffeb3b;"></i> 
+                 Meilleur Score (local) : <span id="bestScoreValue">--</span> tentatives
+            </div>
+            
+            <div class="attempt-counter">
+                Tentatives : <span id="attemptCount">0</span>
+            </div>
+            
+            <div class="action-buttons" id="challengeExitArea">
+                <button class="new-game-button challenge-exit-button hidden" id="exitChallengeButton" onclick="quitterDefi()">
+                    <i class="fa-solid fa-arrow-left"></i> Revenir au Mode Normal
+                </button>
+            </div>
+
+            <div class="input-area">
+                <input type="text" id="wordInput" placeholder="Saisir un mot ici..." autofocus onkeydown="if(event.key === 'Enter') proposerMot()">
+                <button onclick="proposerMot()" id="proposeButton">Proposer</button>
+            </div>
+            
+            <div class="error-message" id="errorMessage"></div>
+
+            <div class="results">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 45%; padding-left: 10px;">Mot Proposé</th>
+                            <th style="width: 25%;">Score (0-1000)</th>
+                            <th style="width: 30%;">Température</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scoreTableBody">
+                        </tbody>
+                </table>
+            </div>
+            
+            <div class="action-buttons" id="normalGameActionButtons">
+                <button class="new-game-button" id="nextLevelButton" onclick="passerAuMotSuivant()">Passer au Mot Suivant</button>
+                <button class="new-game-button reset-button" onclick="resetProgress()">Réinitialiser la Progression</button>
+            </div>
+            
+        </div>
+        
+        <div class="chart-container social-panel" id="chartContainer" style="background: #1e1e1e; border-radius: 16px;">
+            <h2>Progression du Score</h2>
+            <canvas id="scoreChart"></canvas>
+        </div>
+
+        <div id="socialPanel" class="social-panel">
+            <h2><i class="fa-solid fa-users" style="color:#ff9800;"></i> Jouer en Ligne / Amis (Simulé)</h2>
+            <div class="search-input-area">
+                <input type="text" id="friendSearchInput" placeholder="Rechercher un pseudo (Ex: Joueur2)" onkeydown="if(event.key === 'Enter') searchFriend()">
+                <button onclick="searchFriend()"><i class="fa-solid fa-magnifying-glass"></i> Rechercher</button>
+            </div>
+            <div id="searchResults">
+                <p class="social-info">Cherchez votre propre pseudo ou "Joueur2" pour voir le bouton "Défier".</p>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="easter-egg-message" id="easterEggMessage">
+        T'es bête ou quoi ? 💩
+        <div style="margin-top: 20px;">
+             <button class="new-game-button" onclick="nouvellePartie()">Nouvelle Partie</button>
+        </div>
+    </div>
+
+
+    <script>
+        // --- DONNÉES DU JEU (Inchangées) ---
+        const SEQUENCE_MOTS_SECRETS = [
+            "chien", "ordinateur", "voyage", "musique", "montagne", 
+            "livre", "amitié", "soleil", "chocolat", "futur", "maison", "pluie", "argent"
+        ];
+        const ASSOCIATIONS = {
+            "chien": { "chat": 950, "animal": 800, "fidelite": 650, "promenade": 720, "loup": 780, "aboyer": 500, "croquette": 550 },
+            "ordinateur": { "clavier": 900, "souris": 850, "programme": 750, "travail": 600, "internet": 820, "code": 700, "ecran": 880 },
+            "voyage": { "avion": 900, "vacances": 850, "aventure": 700, "passeport": 650, "exploration": 780, "deplacement": 600, "destination": 830 },
+            "musique": { "guitare": 900, "chanter": 850, "concert": 700, "rythme": 780, "emotion": 550, "instrument": 820, "note": 760 },
+            "montagne": { "ski": 900, "neige": 850, "randonnee": 750, "sommet": 600, "froid": 550, "altitude": 700, "alpinisme": 780 },
+            "livre": { "lecture": 920, "page": 850, "ecrire": 750, "auteur": 600, "roman": 800, "histoire": 700, "bibliotheque": 790 },
+            "amitié": { "amour": 700, "famille": 650, "confiance": 850, "partage": 750, "lien": 680, "relation": 720, "joie": 600 },
+            "soleil": { "chaleur": 900, "plage": 750, "été": 850, "lumiere": 800, "astre": 780, "jour": 700, "ciel": 650 },
+            "chocolat": { "cacao": 900, "dessert": 850, "sucre": 700, "gourmandise": 820, "noir": 780, "gateau": 750, "douceur": 600 },
+            "futur": { "temps": 900, "demain": 850, "espoir": 700, "science": 650, "prochain": 780, "technologie": 750 },
+            "maison": { "famille": 800, "appartement": 950, "toit": 700, "confort": 650, "jardin": 750, "immeuble": 880, "logement": 920 },
+            "pluie": { "parapluie": 900, "eau": 850, "nuage": 750, "goutte": 800, "tempete": 650, "averse": 780, "ciel": 700 },
+            "argent": { "richesse": 900, "banque": 850, "travail": 750, "payer": 800, "monnaie": 950, "economie": 820, "fortune": 780 }
+        };
+        
+        // --- VARIABLES GLOBALES ---
+        let currentLevel = 0;
+        let motSecret = "";
+        let essais = [];
+        let totalEssais = 0;
+        let partieTerminee = false;
+        let chartInstance;
+        let username = "";
+        
+        // Variables pour le mode Défi Simulé
+        const MOT_DEFI = "mystère"; 
+        let isChallengeMode = false;
+        let originalMotSecret = ""; 
+
+
+        // ====================================
+        // GESTION DU PROFIL
+        // (Inchangé)
+        // ====================================
+
+        function loadProfile() {
+            username = localStorage.getItem('semantique_infini_username');
+            if (username) {
+                document.getElementById('profileName').textContent = username;
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('profileArea').classList.remove('hidden');
+                document.getElementById('mainGameArea').classList.remove('hidden');
+                chargerProgression(); 
+            } else {
+                document.getElementById('loginScreen').classList.remove('hidden');
+                document.getElementById('profileArea').classList.add('hidden');
+                document.getElementById('mainGameArea').classList.add('hidden');
+                document.getElementById('usernameInput').focus();
+            }
+        }
+
+        function saveProfile() {
+            const input = document.getElementById('usernameInput');
+            let newUsername = input.value.trim();
+
+            if (newUsername.length < 3) {
+                alert("Le pseudo doit contenir au moins 3 caractères.");
+                return;
+            }
+            if (newUsername.length > 12) {
+                 newUsername = newUsername.substring(0, 12); 
+            }
+            
+            localStorage.setItem('semantique_infini_username', newUsername);
+            loadProfile(); 
+        }
+        
+        function resetProfile() {
+            if (confirm(`Êtes-vous sûr de vouloir changer de pseudo ? (Votre progression ne sera pas effacée)`)) {
+                localStorage.removeItem('semantique_infini_username');
+                document.getElementById('usernameInput').value = "";
+                loadProfile();
+            }
+        }
+
+        // ====================================
+        // GESTION SOCIALE & DÉFI (SIMULÉ)
+        // (Inchangé)
+        // ====================================
+        
+        function searchFriend() {
+            const searchInput = document.getElementById('friendSearchInput');
+            const resultsDiv = document.getElementById('searchResults');
+            const query = searchInput.value.trim();
+            resultsDiv.innerHTML = '';
+            
+            if (!query) {
+                resultsDiv.innerHTML = '<p class="social-info">Veuillez entrer un pseudo à rechercher.</p>';
+                return;
+            }
+
+            resultsDiv.innerHTML = '<p class="social-info" style="color:#00bcd4;"><i class="fa-solid fa-spinner fa-spin"></i> Recherche en cours...</p>';
+
+            setTimeout(() => {
+                const myUsername = localStorage.getItem('semantique_infini_username');
+                
+                if (query.toLowerCase() === myUsername.toLowerCase() || query.toLowerCase() === "joueur2") {
+                    const friendName = (query.toLowerCase() === myUsername.toLowerCase()) ? `${myUsername} (Vous)` : query;
+                    const statusColor = (query.toLowerCase() === myUsername.toLowerCase()) ? '#ff9800' : '#4caf50';
+                    
+                    resultsDiv.innerHTML = `
+                        <div class="friend-result">
+                            <span class="friend-name"><i class="fa-solid fa-user" style="color:${statusColor}; margin-right: 5px;"></i> ${friendName}</span>
+                            <span class="friend-status" style="color: ${statusColor};"><i class="fa-solid fa-circle-dot"></i> En ligne</span>
+                            <button onclick="proposerDefi('${friendName}')">Défier</button>
+                        </div>
+                    `;
+                } 
+                else if (query.length > 0) {
+                     resultsDiv.innerHTML = `
+                        <p class="social-info" style="color:#f44336;">Aucun joueur correspondant au pseudo "${query}" trouvé.</p>
+                        <p class="social-info" style="margin-top: 15px;">**NOTE :** Cette fonctionnalité nécessite un serveur web réel pour lier les joueurs.</p>
+                    `;
+                }
+
+                searchInput.value = ''; 
+
+            }, 1000); 
+        }
+
+        function proposerDefi(ami) {
+            const resultsDiv = document.getElementById('searchResults');
+            resultsDiv.innerHTML = `
+                <div class="challenge-message">
+                    Défi envoyé à **${ami}** ! ⚔️
+                    <p style="font-weight: 400; font-size: 13px; margin-top: 8px;">
+                        Mot secret choisi pour ce défi : **${MOT_DEFI.toUpperCase()}**.
+                        Vous allez jouer maintenant. ${ami} devra battre votre score !
+                    </p>
+                    <button onclick="lancerDefi()">Commencer le Défi</button>
+                </div>
+            `;
+            if (ami.includes('(Vous)')) {
+                 resultsDiv.querySelector('button').textContent = "Lancer le Défi (Local)";
+            }
+        }
+
+        function lancerDefi() {
+            if (motSecret) {
+                originalMotSecret = motSecret;
+            }
+            
+            isChallengeMode = true;
+            motSecret = MOT_DEFI;
+            essais = []; 
+            totalEssais = 0;
+            partieTerminee = false;
+
+            document.getElementById('levelTitle').textContent = `⚔️ Défi en Ligne : Mot ${MOT_DEFI.toUpperCase()} ⚔️`;
+            
+            mettreAJourUIJeu(false);
+            afficherResultats();
+            
+            document.getElementById('socialPanel').classList.add('hidden');
+            document.getElementById('exitChallengeButton').classList.remove('hidden'); 
+            document.getElementById('normalGameActionButtons').classList.add('hidden'); 
+            document.getElementById('bestScoreDisplay').classList.add('hidden'); // Cache le score local
+            document.getElementById('wordInput').focus();
+        }
+
+        function terminerDefi() {
+            const scoreDefi = totalEssais;
+            alert(`Défi terminé en ${scoreDefi} tentatives ! Votre score a été envoyé. Le mot secret était : ${motSecret}.`);
+            
+            isChallengeMode = false;
+            
+            chargerProgression();
+            
+            document.getElementById('socialPanel').classList.remove('hidden');
+            document.getElementById('searchResults').innerHTML = '<p class="social-info">Défi terminé. Cherchez un nouvel ami ou reprenez les niveaux.</p>';
+            
+            document.getElementById('exitChallengeButton').classList.add('hidden'); 
+            document.getElementById('normalGameActionButtons').classList.remove('hidden'); 
+            document.getElementById('bestScoreDisplay').classList.remove('hidden'); // Affiche le score local
+        }
+        
+        function quitterDefi() {
+            if (confirm("Êtes-vous sûr de vouloir abandonner le défi en cours ? Vos tentatives ne seront pas sauvegardées comme score de défi.")) {
+                isChallengeMode = false;
+                
+                // On recharge l'état de la partie normale (le niveau en cours)
+                chargerProgression();
+                
+                // Rétablir les affichages
+                document.getElementById('socialPanel').classList.remove('hidden');
+                document.getElementById('exitChallengeButton').classList.add('hidden'); 
+                document.getElementById('normalGameActionButtons').classList.remove('hidden'); 
+                document.getElementById('bestScoreDisplay').classList.remove('hidden'); // Affiche le score local
+            }
+        }
+
+        // ====================================
+        // NOUVEAU: GESTION DU MEILLEUR SCORE LOCAL
+        // ====================================
+
+        function sauvegarderMeilleurScore() {
+            if (isChallengeMode || !partieTerminee) {
+                return;
+            }
+            
+            // La clé de sauvegarde est spécifique au niveau actuel
+            const key = `semantique_infini_bestscore_${currentLevel}`;
+            
+            const bestScoreActuel = parseInt(localStorage.getItem(key)) || Infinity;
+            
+            if (totalEssais < bestScoreActuel) {
+                localStorage.setItem(key, totalEssais.toString());
+                afficherMeilleurScore();
+                if (bestScoreActuel !== Infinity) {
+                    // On alerte que le record a été battu (sauf si c'est la première fois)
+                    alert(`Nouveau Record pour le mot "${motSecret.toUpperCase()}" ! ${totalEssais} tentatives.`);
+                }
+            }
+        }
+
+        function afficherMeilleurScore() {
+            if (isChallengeMode) {
+                document.getElementById('bestScoreDisplay').classList.add('hidden');
+                return;
+            }
+            
+            document.getElementById('bestScoreDisplay').classList.remove('hidden');
+            const key = `semantique_infini_bestscore_${currentLevel}`;
+            const bestScore = localStorage.getItem(key);
+            const displayElement = document.getElementById('bestScoreValue');
+
+            if (bestScore) {
+                displayElement.textContent = bestScore;
+                displayElement.style.color = (parseInt(bestScore) <= 5) ? '#4caf50' : '#ffeb3b';
+            } else {
+                displayElement.textContent = "--";
+                displayElement.style.color = '#ffeb3b';
+            }
+        }
+
+
+        // --- Fonctions de Jeu ---
+
+        function chargerProgression() {
+            const exitButton = document.getElementById('exitChallengeButton');
+            const normalActions = document.getElementById('normalGameActionButtons');
+
+            if (isChallengeMode) {
+                motSecret = MOT_DEFI;
+                document.getElementById('levelTitle').textContent = `⚔️ Défi en Ligne : Mot ${MOT_DEFI.toUpperCase()} ⚔️`;
+                exitButton.classList.remove('hidden');
+                normalActions.classList.add('hidden');
+                document.getElementById('bestScoreDisplay').classList.add('hidden');
+                return;
+            }
+            
+            document.getElementById('gameContainer').classList.remove('hidden');
+            document.getElementById('chartContainer').classList.remove('hidden');
+            document.getElementById('easterEggMessage').style.display = 'none';
+
+            // Masquer/Afficher les éléments spécifiques au mode
+            exitButton.classList.add('hidden');
+            normalActions.classList.remove('hidden');
+
+            const savedLevel = localStorage.getItem('semantique_infini_level');
+            if (savedLevel !== null) {
+                currentLevel = parseInt(savedLevel);
+            }
+            
+            if (currentLevel >= SEQUENCE_MOTS_SECRETS.length) {
+                currentLevel = 0; 
+            }
+
+            const savedEssais = localStorage.getItem(`semantique_infini_essais_${currentLevel}`);
+            if (savedEssais) {
+                essais = JSON.parse(savedEssais);
+                totalEssais = essais.length;
+                partieTerminee = essais.some(e => e.score === 1000);
+            } else {
+                essais = [];
+                totalEssais = 0;
+                partieTerminee = false;
+            }
+
+            motSecret = SEQUENCE_MOTS_SECRETS[currentLevel];
+            
+            document.getElementById('levelTitle').textContent = `Mot Secret du Jour N°${currentLevel + 1} (${motSecret.toUpperCase()})`; // Affiche le mot secret pour la démo
+            mettreAJourUIJeu(partieTerminee);
+            afficherResultats();
+            afficherMeilleurScore(); // Afficher le meilleur score pour ce niveau
+            document.getElementById('wordInput').focus();
+        }
+
+
+        function sauvegarderEssais() {
+            if (isChallengeMode) {
+                return; 
+            }
+            localStorage.setItem(`semantique_infini_essais_${currentLevel}`, JSON.stringify(essais));
+            localStorage.setItem('semantique_infini_level', currentLevel.toString());
+        }
+
+        function mettreAJourUIJeu(trouve) {
+            const input = document.getElementById('wordInput');
+            const proposeButton = document.getElementById('proposeButton');
+            const nextButton = document.getElementById('nextLevelButton');
+            
+            input.disabled = trouve;
+            proposeButton.disabled = trouve;
+            
+            if (isChallengeMode && trouve) {
+                nextButton.textContent = "Terminer le Défi";
+                nextButton.classList.remove('disabled-button');
+                nextButton.onclick = terminerDefi;
+                nextButton.disabled = false;
+                
+                document.getElementById('normalGameActionButtons').classList.add('hidden');
+                document.getElementById('exitChallengeButton').classList.remove('hidden');
+                
+                return;
+            }
+            
+            // Mode Normal
+            if (!isChallengeMode) {
+                 document.getElementById('normalGameActionButtons').classList.remove('hidden');
+                 document.getElementById('exitChallengeButton').classList.add('hidden'); 
+            }
+
+            if (trouve) {
+                sauvegarderMeilleurScore(); // Sauvegarde le meilleur score
+                nextButton.textContent = (currentLevel + 1 < SEQUENCE_MOTS_SECRETS.length) ? "Passer au Mot Suivant" : "Recommencer la Série";
+                nextButton.classList.remove('disabled-button');
+                nextButton.onclick = passerAuMotSuivant; 
+                nextButton.disabled = false;
+            } else {
+                nextButton.textContent = "Passer au Mot Suivant";
+                nextButton.classList.add('disabled-button');
+                nextButton.onclick = passerAuMotSuivant;
+                nextButton.disabled = true;
+            }
+        }
+        
+        // --- Fonctions d'aide (calcul, température, distance inchangées) ---
+
+        function levenshteinDistance(s1, s2) {
+            s1 = s1.toLowerCase(); s2 = s2.toLowerCase();
+            const costs = new Array();
+            for (let i = 0; i <= s1.length; i++) {
+                let lastValue = i;
+                for (let j = 0; j <= s2.length; j++) {
+                    if (i == 0) { costs[j] = j; } 
+                    else if (j > 0) {
+                        let newValue = costs[j - 1];
+                        if (s1.charAt(i - 1) != s2.charAt(j - 1)) {
+                            newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
+                        }
+                        costs[j - 1] = lastValue;
+                        lastValue = newValue;
+                    }
+                }
+                if (i > 0) costs[s2.length] = lastValue;
+            }
+            return costs[s2.length];
+        }
+
+        function corrigerMot(mot) {
+            let meilleureCorrection = mot;
+            let distanceMin = Infinity;
+            
+            let motsAVerifier = [motSecret];
+            if (ASSOCIATIONS[motSecret] && !isChallengeMode) {
+                motsAVerifier = motsAVerifier.concat(Object.keys(ASSOCIATIONS[motSecret]));
+            }
+            
+            for (let motValide of motsAVerifier) {
+                const distance = levenshteinDistance(mot, motValide);
+                if (distance < distanceMin) {
+                    distanceMin = distance;
+                    meilleureCorrection = motValide;
+                }
+            }
+
+            if (distanceMin <= 2 && distanceMin > 0) {
+                return meilleureCorrection;
+            }
+            return mot;
+        }
+
+        function calculerScore(motPropose) {
+            if (motPropose === motSecret) return 1000;
+            if (isChallengeMode || !ASSOCIATIONS[motSecret] || !ASSOCIATIONS[motSecret][motPropose]) {
+                let score = (Math.random() * 80) + 1;
+                return parseFloat(score.toFixed(2));
+            }
+            return ASSOCIATIONS[motSecret][motPropose];
+        }
+
+        function determinerTemp(score) {
+            if (score === 1000) return { text: "TROUVÉ ! 🏆", class: "temp-win" };
+            if (score >= 900) return { text: "ÉBULLITION ☢️", class: "score-900" };
+            if (score >= 700) return { text: "CHAUD BOUILLANT 🔥", class: "score-700" };
+            if (score >= 500) return { text: "Chaud 🟠", class: "score-500" };
+            if (score >= 100) return { text: "Tiède 🟡", class: "score-100" };
+            return { text: "Glace 🧊", class: "score-0" };
+        }
+
+        function getScoreColorClass(score) {
+            if (score === 1000) return 'score-900'; 
+            if (score >= 900) return 'score-900';
+            if (score >= 700) return 'score-700';
+            if (score >= 500) return 'score-500';
+            if (score >= 100) return 'score-100';
+            return 'score-0';
+        }
+
+        function getBorderColor(tempClass) {
+            if (tempClass === 'temp-win') return '#4caf50'; 
+            if (tempClass === 'score-900') return '#ffeb3b';
+            if (tempClass === 'score-700') return '#ff9800';
+            if (tempClass === 'score-500') return '#f0f0f0';
+            return '#666666';
+        }
+
+        
+        function afficherResultats() {
+            const tbody = document.getElementById('scoreTableBody');
+            const tempFragment = document.createDocumentFragment();
+            
+            // 1. Clonage et tri des essais : du plus grand score au plus petit
+            const essaisTries = [...essais].sort((a, b) => b.score - a.score);
+            
+            tbody.innerHTML = ''; 
+            
+            document.getElementById('attemptCount').textContent = totalEssais;
+
+            essaisTries.forEach(essai => {
+                const temp = determinerTemp(essai.score);
+                const scoreColorClass = getScoreColorClass(essai.score);
+                const row = document.createElement('tr');
+                
+                let motDisplay = essai.mot.charAt(0).toUpperCase() + essai.mot.slice(1);
+                if (essai.corrige) {
+                    motDisplay += `<span class="correction-text" style="font-size: 11px; color: #888;"> (corrigé de ${essai.original})</span>`;
+                }
+                const motCell = row.insertCell();
+                motCell.innerHTML = (essai.score > 700) ? `<strong>${motDisplay}</strong>` : motDisplay;
+                
+                motCell.style.borderLeftColor = getBorderColor(temp.class);
+                motCell.style.borderLeftWidth = '5px';
+                motCell.style.borderLeftStyle = 'solid';
+
+                const scoreCell = row.insertCell();
+                scoreCell.textContent = essai.score.toFixed(2).replace('.', ',');
+                scoreCell.classList.add('score-cell', scoreColorClass);
+
+                const tempCell = row.insertCell();
+                tempCell.innerHTML = `<span class="${temp.class}">${temp.text}</span>`;
+                
+                tempFragment.appendChild(row);
+            });
+            
+            tbody.appendChild(tempFragment);
+            mettreAJourGraphique();
+
+            const resultsDiv = document.querySelector('.results');
+            if (resultsDiv) {
+                resultsDiv.scrollTop = 0; 
+            }
+        }
+
+        // --- Fonctions de Graphique et d'action (inchangées) ---
+        
+        function mettreAJourGraphique() {
+            const ctx = document.getElementById('scoreChart').getContext('2d');
+            
+            const scores = essais.map(e => e.score);
+            const tentatives = essais.map((e, index) => index + 1);
+
+            if (chartInstance) { chartInstance.destroy(); }
+            
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: tentatives,
+                    datasets: [{
+                        label: 'Progression du Score',
+                        data: scores,
+                        borderColor: isChallengeMode ? '#ff9800' : '#00bcd4', 
+                        backgroundColor: isChallengeMode ? 'rgba(255, 152, 0, 0.15)' : 'rgba(0, 188, 212, 0.15)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'Objectif (1000)',
+                        data: Array(scores.length).fill(1000),
+                        borderColor: '#4caf50', 
+                        borderDash: [5, 5],
+                        pointRadius: 0,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { 
+                            min: 0, max: 1000, 
+                            title: { display: true, text: 'Score Sémantique', color: '#aaaaaa', font: { weight: '600' } },
+                            ticks: { color: '#aaaaaa' },
+                            grid: { color: '#333333' } 
+                        },
+                        x: { 
+                            title: { display: true, text: 'Tentative', color: '#aaaaaa', font: { weight: '600' } },
+                            ticks: { color: '#aaaaaa' },
+                            grid: { color: '#333333' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { 
+                            backgroundColor: 'rgba(51, 51, 51, 0.9)',
+                            titleColor: '#f0f0f0',
+                            bodyColor: '#f0f0f0',
+                            titleFont: { weight: '600' },
+                            bodyFont: { weight: '500' },
+                            callbacks: { 
+                                label: function(context) { return `Score: ${context.parsed.y.toFixed(2)}`; } 
+                            } 
+                        }
+                    }
+                }
+            });
+        }
+
+        function proposerMot() {
+            if (!username) {
+                alert("Veuillez d'abord entrer un pseudo pour commencer !");
+                document.getElementById('wordInput').blur();
+                document.getElementById('usernameInput').focus();
+                return;
+            }
+            
+            const input = document.getElementById('wordInput');
+            const errorMessage = document.getElementById('errorMessage');
+            const motOriginal = input.value.trim().toLowerCase();
+            input.value = '';
+            errorMessage.textContent = '';
+
+            if (!motOriginal) return;
+            if (partieTerminee) return;
+
+            if (motOriginal === "caca") {
+                document.getElementById('mainGameArea').classList.add('hidden');
+                document.getElementById('profileArea').classList.add('hidden');
+                document.getElementById('easterEggMessage').style.display = 'block';
+                mettreAJourUIJeu(true);
+                return;
+            }
+
+            if (essais.some(e => e.original === motOriginal || e.mot === motOriginal)) {
+                errorMessage.textContent = `Le mot '${motOriginal}' a déjà été proposé.`;
+                return;
+            }
+            if (motOriginal.length < 3) {
+                 errorMessage.textContent = "Le mot doit faire au moins 3 lettres.";
+                return;
+            }
+
+            const motCorrigé = corrigerMot(motOriginal);
+            const estCorrigé = motCorrigé !== motOriginal;
+            
+            if (estCorrigé) {
+                errorMessage.textContent = `Mot corrigé automatiquement : '${motOriginal}' → '${motCorrigé}'.`;
+            }
+
+            totalEssais++;
+            const score = calculerScore(motCorrigé);
+            const victoire = score === 1000;
+
+            essais.push({
+                mot: motCorrigé,
+                score: score,
+                original: motOriginal,
+                corrige: estCorrigé,
+                joueur: username 
+            });
+
+            sauvegarderEssais();
+            afficherResultats();
+
+            if (victoire) {
+                partieTerminee = true;
+                mettreAJourUIJeu(true);
+                return;
+            }
+            
+            document.getElementById('wordInput').focus();
+        }
+
+        function nouvellePartie() {
+            document.getElementById('mainGameArea').classList.remove('hidden');
+            document.getElementById('profileArea').classList.remove('hidden');
+            isChallengeMode = false; 
+            chargerProgression(); 
+        }
+
+        function resetProgress() {
+            if (confirm("Êtes-vous sûr de vouloir réinitialiser TOUTE votre progression dans le mode Niveaux (y compris les meilleurs scores) ?")) {
+                for(let i = 0; i < SEQUENCE_MOTS_SECRETS.length; i++) {
+                     localStorage.removeItem(`semantique_infini_essais_${i}`);
+                     localStorage.removeItem(`semantique_infini_bestscore_${i}`); // Supprime le meilleur score
+                }
+                localStorage.removeItem('semantique_infini_level');
+                currentLevel = 0;
+                chargerProgression();
+                alert("Progression réinitialisée au Mot Secret N°1.");
+            }
+        }
+        
+        function passerAuMotSuivant() {
+            if (!partieTerminee) return; 
+
+            if (currentLevel + 1 >= SEQUENCE_MOTS_SECRETS.length) {
+                currentLevel = 0; 
+                alert("Série Complétée ! Vous recommencez au Mot Secret N°1.");
+            } else {
+                currentLevel++;
+            }
+            
+            localStorage.setItem('semantique_infini_level', currentLevel.toString());
+            chargerProgression(); 
+        }
+
+
+        window.onload = loadProfile;
+    </script>
+
+</body>
+</html>
